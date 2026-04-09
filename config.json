@@ -1,0 +1,22 @@
+{
+  "total_revenue": {
+    "green": 45000,
+    "yellow": 30000
+  },
+  "mom_growth": {
+    "green": 50,
+    "yellow": 10
+  },
+  "aov": {
+    "green": 100,
+    "yellow": 60
+  },
+  "monthly_revenue": {
+    "green": 4000,
+    "yellow": 2500
+  },
+  "category_revenue": {
+    "green": 8000,
+    "yellow": 4000
+  }
+}
