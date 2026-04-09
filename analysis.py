@@ -57,37 +57,29 @@ def compute_kpis(data):
     df["revenue"] = df["quantity"] * df["unit_price"]
     df["order_month"] = pd.to_datetime(df["order_date"]).dt.to_period("M")
 
-    # KPI 1: Total Revenue
     total_revenue = df["revenue"].sum()
 
-    # KPI 2: Total Revenue by City (✔️ Amman الأعلى)
     revenue_by_city = df.groupby("city")["revenue"].sum().sort_values(ascending=False)
 
-    # KPI 3: Monthly Revenue (Time-based)
     monthly_revenue = df.groupby("order_month")["revenue"].sum()
 
-    # KPI 4: MoM Growth (Time-based)
     mom_growth = monthly_revenue.pct_change() * 100
 
-    # KPI 5: Revenue by Category
     revenue_by_category = df.groupby("category")["revenue"].sum().sort_values(ascending=False)
 
-    # Order-level data for statistical test
-    order_value = df.groupby(["order_id", "city"])["revenue"].sum().reset_index()
-    # AOV (مطلوب للـ test)
     order_value = df.groupby(["order_id", "city"])["revenue"].sum().reset_index()
     aov_by_city = order_value.groupby("city")["revenue"].mean()
 
     return {
-    "total_revenue": total_revenue,
-    "aov_by_city": aov_by_city,   # ✅ مهم
-    "monthly_revenue": monthly_revenue,
-    "mom_growth": mom_growth,
-    "revenue_by_category": revenue_by_category,
-    "df": df,
-    "order_value": order_value,
-    "revenue_by_city": revenue_by_city  # optional
-}
+        "total_revenue": total_revenue,
+        "aov_by_city": aov_by_city,
+        "monthly_revenue": monthly_revenue,
+        "mom_growth": mom_growth,
+        "revenue_by_category": revenue_by_category,
+        "df": df,
+        "order_value": order_value,
+        "revenue_by_city": revenue_by_city
+    }
 
 
 # -------------------------------
@@ -124,10 +116,11 @@ def run_statistical_tests(data_dict):
 
     return results
 
+
 # -------------------------------
-# 5. VISUALIZATION
+# 5. VISUALIZATION  (المهم)
 # -------------------------------
-def create_visuals(kpis):
+def create_visualizations(kpis):
     os.makedirs("output", exist_ok=True)
 
     sns.set_palette("colorblind")
@@ -135,7 +128,7 @@ def create_visuals(kpis):
 
     df = kpis["df"]
 
-    # 🔹 Multi-panel figure
+    # Trend + Growth
     fig, axes = plt.subplots(2, 1, figsize=(10, 8))
 
     kpis["monthly_revenue"].plot(ax=axes[0], marker="o")
@@ -148,42 +141,35 @@ def create_visuals(kpis):
     plt.savefig("output/01_trend_growth.png")
     plt.close()
 
-    # Revenue by Category
+    # Category
     plt.figure()
     sns.barplot(
         x=kpis["revenue_by_category"].values,
-        y=kpis["revenue_by_category"].index,
-        hue=kpis["revenue_by_category"].index,
-        legend=False
+        y=kpis["revenue_by_category"].index
     )
     plt.title("Finding: Electronics dominates revenue")
     plt.savefig("output/02_category.png")
     plt.close()
 
-    # ✅ Revenue by City (Amman الأعلى)
+    # City
     plt.figure()
     rev_city = kpis["revenue_by_city"]
 
     sns.barplot(
         x=rev_city.index,
-        y=rev_city.values,
-        hue=rev_city.index,
-        legend=False
+        y=rev_city.values
     )
 
     plt.title("Finding: Amman generates the highest total revenue")
-    plt.xlabel("City")
-    plt.ylabel("Total Revenue (JOD)")
     plt.xticks(rotation=45)
-
     plt.savefig("output/03_revenue_city.png")
     plt.close()
 
     # Boxplot
     plt.figure()
-    sns.boxplot(data=df, x="category", y="revenue", hue="category", legend=False)
-    plt.title("Finding: Variation in order values across categories")
+    sns.boxplot(data=df, x="category", y="revenue")
     plt.xticks(rotation=45)
+    plt.title("Finding: Variation in order values across categories")
     plt.savefig("output/04_boxplot.png")
     plt.close()
 
@@ -209,13 +195,14 @@ def main():
     kpis = compute_kpis(data)
 
     stats_results = run_statistical_tests(data)
-    create_visuals(kpis)
+
+    create_visualizations(kpis)  #  مهم
 
     print("\nTotal Revenue:", round(kpis["total_revenue"], 2))
     print("Latest MoM Growth:", round(kpis["mom_growth"].iloc[-1], 2), "%")
     print("\nStatistical Results:", stats_results)
 
-    print("\nAll tasks completed successfully ✔️")
+    print("\nAll tasks completed successfully")
 
 
 if __name__ == "__main__":

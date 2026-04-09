@@ -54,7 +54,7 @@ def create_gauge(title, value, target):
 # MAIN
 # =========================
 def main():
-    print("🚀 Running KPI Monitor...")
+    print(" Running KPI Monitor...")
 
     config = load_config()
 
@@ -79,7 +79,7 @@ def main():
         "aov": get_status(aov, config["aov"]),
     }
 
-    print("📊 KPI Status:")
+    print("KPI Status:")
     for k, v in statuses.items():
         print(f"{k}: {v}")
 
@@ -167,7 +167,7 @@ def main():
     os.makedirs("output", exist_ok=True)
     fig.write_html("output/kpi_monitor.html")
 
-    print("✅ Dashboard saved to output/kpi_monitor.html")
+    print(" Dashboard saved to output/kpi_monitor.html")
 
     return statuses
 

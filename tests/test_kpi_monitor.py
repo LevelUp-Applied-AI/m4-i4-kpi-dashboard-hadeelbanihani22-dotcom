@@ -169,14 +169,14 @@ def build_dashboard(kpis, config):
     os.makedirs("output", exist_ok=True)
     fig.write_html("output/kpi_monitor_dashboard.html", encoding="utf-8")
 
-    print("✅ Dashboard saved successfully")
+    print(" Dashboard saved successfully")
 
 
 # =========================
 # MAIN
 # =========================
 def main():
-    print("🚀 Running KPI Monitor...")
+    print(" Running KPI Monitor...")
 
     engine = connect_db()
     data = extract_data(engine)

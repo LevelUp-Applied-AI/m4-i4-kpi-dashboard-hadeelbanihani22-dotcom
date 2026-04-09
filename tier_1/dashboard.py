@@ -9,7 +9,7 @@ from analysis import connect_db, extract_data, compute_kpis
 
 
 def main():
-    print("🚀 Building Interactive KPI Dashboard...")
+    print("Building Interactive KPI Dashboard...")
 
     # =========================
     # Load data
@@ -83,7 +83,7 @@ def main():
     # =========================
     output_file = "output/dashboard.html"
 
-    with open(output_file, "w", encoding="utf-8") as f:  # 🔥 حل Unicode
+    with open(output_file, "w", encoding="utf-8") as f:  #  حل Unicode
         f.write("<h1>Amman Digital Market - KPI Dashboard</h1>")
         f.write(fig1.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig2.to_html(full_html=False))
@@ -91,7 +91,7 @@ def main():
         f.write(fig4.to_html(full_html=False))
         f.write(fig5.to_html(full_html=False))
 
-    print(f"✅ Dashboard saved to {output_file}")
+    print(f"Dashboard saved to {output_file}")
 
 
 if __name__ == "__main__":

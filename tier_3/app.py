@@ -93,7 +93,7 @@ def update_dashboard(city):
     aov = dff.groupby("order_id")["revenue"].sum().mean()
 
     # =========================
-    # KPI FIGURE (FIXED 🔥)
+    # KPI FIGURE (FIXED )
     # =========================
     fig_kpi = make_subplots(
         rows=1, cols=2,
