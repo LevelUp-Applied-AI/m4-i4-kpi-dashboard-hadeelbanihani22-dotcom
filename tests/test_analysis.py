@@ -1,29 +1,62 @@
-"""Tests for the KPI dashboard analysis.
-
-Write at least 3 tests:
-1. test_extraction_returns_dataframes — extract_data returns a dict of DataFrames
-2. test_kpi_computation_returns_expected_keys — compute_kpis returns a dict with your 5 KPI names
-3. test_statistical_test_returns_pvalue — run_statistical_tests returns results with p-values
-"""
 import pytest
+import pandas as pd
+from analysis import connect_db, extract_data, compute_kpis, run_statistical_tests
 
 
-def test_extraction_returns_dataframes():
-    """Connect to the database, extract data, and verify the result is a dict of DataFrames."""
-    # TODO: Call connect_db and extract_data, then assert the result is a dict
-    #       with DataFrame values for each expected table
-    pass
+@pytest.fixture(scope="module")
+def data_dict():
+    """Extract data once for all tests"""
+    engine = connect_db()
+    return extract_data(engine)
 
 
-def test_kpi_computation_returns_expected_keys():
-    """Compute KPIs and verify the result contains all expected KPI names."""
-    # TODO: Extract data, call compute_kpis, then assert the returned dict
-    #       contains the keys matching your 5 KPI names
-    pass
+def test_extraction_returns_dataframes(data_dict):
+    """Check extraction returns correct structure"""
+    assert isinstance(data_dict, dict)
+
+    expected_tables = ["customers", "products", "orders", "order_items"]
+    for table in expected_tables:
+        assert table in data_dict
+        assert isinstance(data_dict[table], pd.DataFrame)
+
+    # Check cleaning
+    assert (data_dict["orders"]["status"] != "cancelled").all()
+    assert (data_dict["order_items"]["quantity"] <= 100).all()
 
 
-def test_statistical_test_returns_pvalue():
-    """Run statistical tests and verify results include p-values."""
-    # TODO: Extract data, call run_statistical_tests, then assert at least
-    #       one result contains a numeric p-value between 0 and 1
-    pass
+def test_kpi_computation_returns_expected_keys(data_dict):
+    """Check KPI structure"""
+    kpis = compute_kpis(data_dict)
+
+    expected_keys = [
+        "total_revenue",
+        "aov_by_city",
+        "monthly_revenue",
+        "mom_growth",
+        "revenue_by_category"
+    ]
+
+    for key in expected_keys:
+        assert key in kpis
+
+    assert isinstance(kpis["total_revenue"], (int, float))
+    assert len(kpis["aov_by_city"]) > 0
+    assert len(kpis["monthly_revenue"]) > 0
+
+
+def test_statistical_test_returns_pvalue(data_dict):
+    """Check statistical results"""
+    results = run_statistical_tests(data_dict)
+
+    assert isinstance(results, dict)
+    assert len(results) > 0
+
+    found_p = False
+    for test_name, result in results.items():
+        if "p_value" in result:
+            p = result["p_value"]
+            assert isinstance(p, (int, float))
+            assert 0 <= p <= 1
+            found_p = True
+
+    assert found_p
